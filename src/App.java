@@ -111,7 +111,30 @@ public class App {
 
         System.out.printf("La duracion del viaje es de %.2f horas (%.2f minutos, %.2f días, %.2f años).%n", timeHours, timeMinutos, timeDays, timeYears);
         pressEnter(reqCalculate);
+    // avance progreso
+    System.out.println("viajando...");
+
+    int totalSteps = 100;  // 100 pasos para simular el progreso de 1 a 100%
+    for (int i = 1; i <= totalSteps; i++) {
+        try {
+            
+            Thread.sleep((long) (timeHours / totalSteps * 1000));  // este error quiero corregirlo se demora el viaje dependiendo a el tiempo de el viaje
+        } catch (InterruptedException e) {
+            System.err.println("Error en el hilo de ejecución: " + e.getMessage());
+            return;
+        }
+
+        // Mostrar la barra de progreso
+        double percentage = (i * 100.0) / totalSteps;
+        System.out.printf("\r[%-50s] %.2f%%", "=".repeat(i), percentage);
+
+        
     }
+
+    System.out.println("\nViaje completado!");
+    pressEnter(reqCalculate);
+}
+
 
     //Método para esperar a que el usuario presione ENTER para seguir.
     private static void pressEnter(Scanner pressRequest) {
