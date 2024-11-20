@@ -111,25 +111,37 @@ public class App {
 
         System.out.printf("La duracion del viaje es de %.2f horas (%.2f minutos, %.2f días, %.2f años).%n", timeHours, timeMinutos, timeDays, timeYears);
         pressEnter(reqCalculate);
-    // avance progreso
+    
+        double combustible = 100.0;  // 100% de combustible al inicio
+        double oxigeno = 100.0;  // 100% de oxígeno al inicio
+    
+    
+        // avance progreso
     System.out.println("viajando...");
 
     int totalSteps = 100;  // 100 pasos para simular el progreso de 1 a 100%
     long sleepTimePerStep = 500;  // Tiempo constante en milisegundos para cada paso de la barra de progreso
 
+    double combustiblePorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
+    double oxigenoPorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
+
     for (int i = 1; i <= totalSteps; i++) {
         try {
-            // Esperar un tiempo constante entre cada actualización de la barra de progreso
-            Thread.sleep(sleepTimePerStep);  // 100 ms para cada paso
+            
+            Thread.sleep(sleepTimePerStep); 
         } catch (InterruptedException e) {
             System.err.println("Error en el hilo de ejecución: " + e.getMessage());
             return;
 
         }
 
-        // Mostrar la barra de progreso
+         // quitar recursos
+        combustible -= combustiblePorPaso;
+        oxigeno -= oxigenoPorPaso;
+
+        // barra de progreso
         double percentage = (i * 100.0) / totalSteps;
-        System.out.printf("\r[%-50s] %.2f%%", "=".repeat(i), percentage);
+        System.out.printf("\r[%-50s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%%", "=".repeat(i), percentage, combustible, oxigeno);
 
         
     }
