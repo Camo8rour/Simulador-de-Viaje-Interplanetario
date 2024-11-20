@@ -111,24 +111,41 @@ public class App {
 
         System.out.printf("La duracion del viaje es de %.2f horas (%.2f minutos, %.2f días, %.2f años).%n", timeHours, timeMinutos, timeDays, timeYears);
         pressEnter(reqCalculate);
-    // avance progreso
+    
+        double combustible = 100.0;  // 100% de combustible al inicio
+        double oxigeno = 100.0;  // 100% de oxígeno al inicio
+        
+    
+        // avance progreso
     System.out.println("viajando...");
 
-    int totalSteps = 100;  // 100 pasos para simular el progreso de 1 a 100%
+    int totalSteps = 100;  // progreso 1 a 100
+    long sleepTimePerStep = 500;  // Tiempo milisegundos si quieres lo puedes agrandar o minimizar
+
+    double combustiblePorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
+    double oxigenoPorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
+
+    String nave = "[:>";  // la nave xd
+    
     for (int i = 1; i <= totalSteps; i++) {
         try {
             
-            Thread.sleep((long) (timeHours / totalSteps * 1000));  // este error quiero corregirlo se demora el viaje dependiendo a el tiempo de el viaje
+            Thread.sleep(sleepTimePerStep); 
         } catch (InterruptedException e) {
             System.err.println("Error en el hilo de ejecución: " + e.getMessage());
             return;
+
         }
 
-        // Mostrar la barra de progreso
-        double percentage = (i * 100.0) / totalSteps;
-        System.out.printf("\r[%-50s] %.2f%%", "=".repeat(i), percentage);
+         // quitar recursos
+        combustible -= combustiblePorPaso;
+        oxigeno -= oxigenoPorPaso;
 
-        
+        // barra de progreso
+        double percentage = (i * 100.0) / totalSteps;
+        String barra = "=".repeat(i) + nave + " ".repeat(totalSteps - i);
+
+        System.out.printf("\r[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%%", barra, percentage, combustible, oxigeno);
     }
 
     System.out.println("\nViaje completado!");
