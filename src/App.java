@@ -119,8 +119,8 @@ public class App {
         // avance progreso
     System.out.println("viajando...");
 
-    int totalSteps = 100;  // 100 pasos para simular el progreso de 1 a 100%
-    long sleepTimePerStep = 500;  // Tiempo constante en milisegundos para cada paso de la barra de progreso
+    int totalSteps = 100;  // progreso 1 a 100
+    long sleepTimePerStep = 500;  // Tiempo milisegundos si quieres lo puedes agrandar o minimizar
 
     double combustiblePorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
     double oxigenoPorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
