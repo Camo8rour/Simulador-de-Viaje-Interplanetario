@@ -115,13 +115,16 @@ public class App {
     System.out.println("viajando...");
 
     int totalSteps = 100;  // 100 pasos para simular el progreso de 1 a 100%
+    long sleepTimePerStep = 500;  // Tiempo constante en milisegundos para cada paso de la barra de progreso
+
     for (int i = 1; i <= totalSteps; i++) {
         try {
-            
-            Thread.sleep((long) (timeHours / totalSteps * 1000));  // este error quiero corregirlo se demora el viaje dependiendo a el tiempo de el viaje
+            // Esperar un tiempo constante entre cada actualización de la barra de progreso
+            Thread.sleep(sleepTimePerStep);  // 100 ms para cada paso
         } catch (InterruptedException e) {
             System.err.println("Error en el hilo de ejecución: " + e.getMessage());
             return;
+
         }
 
         // Mostrar la barra de progreso
