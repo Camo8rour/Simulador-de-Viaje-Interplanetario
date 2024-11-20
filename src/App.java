@@ -114,7 +114,7 @@ public class App {
     
         double combustible = 100.0;  // 100% de combustible al inicio
         double oxigeno = 100.0;  // 100% de oxígeno al inicio
-    
+        
     
         // avance progreso
     System.out.println("viajando...");
@@ -125,6 +125,8 @@ public class App {
     double combustiblePorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
     double oxigenoPorPaso = 100.0 / totalSteps;  // Disminuye 1% por cada paso
 
+    String nave = "[:>";  // la nave xd
+    
     for (int i = 1; i <= totalSteps; i++) {
         try {
             
@@ -141,9 +143,9 @@ public class App {
 
         // barra de progreso
         double percentage = (i * 100.0) / totalSteps;
-        System.out.printf("\r[%-50s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%%", "=".repeat(i), percentage, combustible, oxigeno);
+        String barra = "=".repeat(i) + nave + " ".repeat(totalSteps - i);
 
-        
+        System.out.printf("\r[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%%", barra, percentage, combustible, oxigeno);
     }
 
     System.out.println("\nViaje completado!");
