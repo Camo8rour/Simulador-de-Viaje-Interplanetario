@@ -126,10 +126,10 @@ public class App {
         int totalSteps = 100; // Progreso 1 a 100
         long sleepTimePerStep = 500; // Tiempo milisegundos si quieres lo puedes agrandar o minimizar
 
-        double combustiblePorPaso = 100.0 / totalSteps; // Disminuye 1% por cada paso
-        double oxigenoPorPaso = 100.0 / totalSteps; // Disminuye 1% por cada paso
+        double combustiblePorPaso = 200.0 / totalSteps; // Disminuye 1% por cada paso
+        double oxigenoPorPaso = 200.0 / totalSteps; // Disminuye 1% por cada paso
 
-        String nave = "[:>"; // La nave xd
+        String nave = "[>"; // La nave xd
 
         for (int i = 1; i <= totalSteps; i++) {
             try {
