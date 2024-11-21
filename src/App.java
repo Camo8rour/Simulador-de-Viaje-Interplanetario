@@ -4,8 +4,8 @@ public class App {
 
     // Método con los planetas y sus distancias.
     static Object[] listPlanets() {
-        String[] planets = { "Júpiter", "Marte", "Mercurio", "Neptuno", "Saturno", "Urano", "Venus" };
-        double[] distance = { 628.9, 78.3, 91.7, 4345.4, 1284.4, 2721.4, 42.4 };
+        String[] planets = { "Venus", "Marte", "Mercurio", "Júpiter", "Saturno", "Urano", "Neptuno" };
+        double[] distance = { 42.4, 78.3, 91.7, 628.9, 1284.4, 2721.4, 4345.4 };
 
         return new Object[] { planets, distance };
     }
@@ -13,7 +13,8 @@ public class App {
     // Método con las naves espaciales y sus velocidades.
     static Object[] listSpaceships() {
         String[] spaceShips = { "Transbordador espacial", "Sonda espacial", "Nave de propulsión nuclear",
-                "Sonda solar de velocidad ultra alta", "Nave de propulsión de antimateria", "Nave con motor de curvatura" };
+                "Sonda solar de velocidad ultra alta", "Nave de propulsión de antimateria",
+                "Nave con motor de curvatura" };
         double[] speed = { 28000, 61000, 100000, 600000, 10000000, 1080000000 };
 
         return new Object[] { spaceShips, speed };
@@ -90,7 +91,7 @@ public class App {
 
         if (option > 0 && option <= spaceShips.length) {
             // Muestra la nave que selecciono y luego va al método de calculo.
-            System.out.printf("%s viajando a %.0f km/h...", spaceShips[option - 1], speed[option - 1]);
+            System.out.printf("%s viaja a %.0f km/h...", spaceShips[option - 1], speed[option - 1]);
             pressEnter(reqShip);
             calculateSpeed(reqShip, planetDistance, speed[option - 1]);
         } else {
@@ -104,32 +105,29 @@ public class App {
 
         double timeHours = (planetDistance * 1_000_000) / shipSpeed;
 
-        double timeDays = timeHours / 24;
-        double timeYears = timeDays / 365;
-        double timeMinutos = timeHours * 60;
-
-        System.out.printf("La duracion del viaje es de %.2f horas (%.2f minutos, %.2f días, %.2f años).%n", timeHours,
-                timeMinutos, timeDays, timeYears);
+        System.out.printf("La duracion del viaje es de %.2f horas.%n",
+                timeHours);
         pressEnter(reqCalculate);
 
-        progresBar(reqCalculate);
+        progresBar(reqCalculate, planetDistance, shipSpeed, timeHours);
     }
 
-    // Método para ver el progreso, la cantidad de combustible y oxígeno.
-    private static void progresBar(Scanner reqCalculate) {
-        double combustible = 100.0; // 100% de combustible al inicio
-        double oxigeno = 100.0; // 100% de oxígeno al inicio
+    // Método para ver el progreso, la cantidad de combustible, oxígeno y tiempo estimado.
+    private static void progresBar(Scanner reqCalculate, double planetDistance, double shipSpeed, double timehours) {
+        double combustible = 100.0; // 100% de combustible al inicio.
+        double oxigeno = 100.0; // 100% de oxígeno al inicio.
 
-        // avance progreso
-        System.out.println("viajando...");
+        // Avance progreso
+        System.out.println("\t Viajando...");
 
-        int totalSteps = 100; // Progreso 1 a 100
-        long sleepTimePerStep = 500; // Tiempo milisegundos si quieres lo puedes agrandar o minimizar
+        int totalSteps = 100; // Progreso 1 a 100.
+        long sleepTimePerStep = 300; // Tiempo milisegundos si quieres lo puedes agrandar o minimizar.
 
-        double combustiblePorPaso = 200.0 / totalSteps; // Disminuye 1% por cada paso
-        double oxigenoPorPaso = 200.0 / totalSteps; // Disminuye 1% por cada paso
+        //Puede cambiarlos para validar cuando faltan recursos
+        double combustiblePorPaso = 50.0 / totalSteps; // Disminuye 0,5% por cada 1% de vance de la nave.
+        double oxigenoPorPaso = 50.0 / totalSteps; // Disminuye 0,5% por cada 1% de vance de la nave.
 
-        String nave = "[>"; // La nave xd
+        String nave = "[>"; // La nave xd.
 
         for (int i = 1; i <= totalSteps; i++) {
             try {
@@ -138,24 +136,53 @@ public class App {
             } catch (InterruptedException e) {
                 System.err.println("Error en el hilo de ejecución: " + e.getMessage());
                 return;
-
             }
 
-            // Quitar recursos
+            // Quitar recursos.
             combustible -= combustiblePorPaso;
             oxigeno -= oxigenoPorPaso;
+
+            // Calcular distancia recorrida y restante.
+            double distancetraveled = (planetDistance * 1_000_000) * (i * 1.0 / totalSteps); // Convertir a km.
+            double remainingdistance = (planetDistance * 1_000_000) - distancetraveled; // Convertir a km.
+
+            // Calcular el tiempo restante en horas.
+            double remainingtime = remainingdistance / shipSpeed;
+
+            // Convertir el tiempo restante a horas y minutos.
+            int remainingHours = (int) remainingtime;
+            int remainingMinutes = (int) ((remainingtime - remainingHours) * 60);
 
             // Barra de progreso
             double percentage = (i * 100.0) / totalSteps;
             String barra = "=".repeat(i) + nave + " ".repeat(totalSteps - i);
 
-            System.out.printf("\r[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%%", barra, percentage, combustible,
-                    oxigeno);
+            System.out.printf(
+                    "\r[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%% | Tiempo Restante: %02d:%02d horas",
+                    barra, percentage, combustible, oxigeno, remainingHours, remainingMinutes);
         }
 
-        System.out.println("\nViaje completado!");
+        // Recursos al final del viaje.
+        System.out.println("\n");
+        if (combustible >= 50.0 && oxigeno >= 50.0) {
+            System.out.println("Viaje completado con éxito. Tienes los recursos necesarios para un viaje de regreso.");
+        } else if (combustible < 50.0 && oxigeno < 50.0) {
+            System.out.println("Viaje completado con éxito, pero los recursos son insuficientes para regresar.");
+            System.err.printf("Combustible bajo solo queda: %.2f%% restante.%n", combustible);
+            System.err.printf("Oxígeno bajo solo queda: %.2f%% restante.%n", oxigeno);
+        }else {
+            System.out.println("Viaje completado con éxito, pero los recursos son insuficientes para regresar.");
+            if (combustible < 50.0) {
+                System.err.printf("Combustible bajo solo queda: %.2f%% restante.%n", combustible);
+            }
+            if (oxigeno < 50.0) {
+                System.err.printf("Oxígeno bajo solo queda: %.2f%% restante.%n", oxigeno);
+            }
+        }
         pressEnter(reqCalculate);
     }
+
+    //FALTA LOS EVENTOS PARA QUITAR RECURSOS, ATRASAR EL VIAJE, ENTRE OTRAS...
 
     // Método para esperar a que el usuario presione ENTER para seguir.
     private static void pressEnter(Scanner pressRequest) {
