@@ -120,7 +120,7 @@ public class App {
         // Avance progreso
         System.out.println("\t Viajando...");
 
-        int totalSteps = 100; // Progreso 1 a 100.
+        int totalSteps = 50; // Progreso 1 a 100.
         long sleepTimePerStep = 300; // Tiempo milisegundos si quieres lo puedes agrandar o minimizar.
 
         //Puede cambiarlos para validar cuando faltan recursos
