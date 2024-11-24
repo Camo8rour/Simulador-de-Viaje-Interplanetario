@@ -238,10 +238,10 @@ public class App {
         combustible = Math.min(100, Math.max(0, combustible));
 
         // Preguntar al usuario si desea actuar
-        System.out.print("¿Deseas repararlo? (Sí/No): ");
+        System.out.print("¿Deseas repararlo? (Si/No): ");
         String respuesta = reqCalculate.nextLine().toLowerCase();
 
-        if (respuesta.equals("sí")) {
+        if (respuesta.equals("si")) {
             // Acción positiva restaura recursos
             oxigeno = Math.min(100, oxigeno + 10);
             combustible = Math.min(100, combustible + 10);
