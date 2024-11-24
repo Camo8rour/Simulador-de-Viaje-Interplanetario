@@ -264,6 +264,3 @@ public class App {
         pressRequest.nextLine();
     }
 }
-        pressRequest.nextLine();
-    }
-}
