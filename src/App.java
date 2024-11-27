@@ -274,11 +274,12 @@ public class App {
         double combustible = resources[0]; // Combustible configurado por el usuario
         double oxigeno = resources[1]; // Oxígeno configurado por el usuario
         
-        int totalSteps = 50; // Progreso de 1 a 100 en incrementos de 2
+        int totalSteps = 100; // Progreso de 1 a 100 en incrementos de 2
         long sleepTimePerStep = 300; // Tiempo de espera en milisegundos
-    
-        double combustiblePorPaso = combustible / totalSteps; // Consumo de combustible por paso
-        double oxigenoPorPaso = oxigeno / totalSteps; // Consumo de oxígeno por paso
+        
+        double consumoMultiplicador = 0.5;
+        double combustiblePorPaso = (combustible / totalSteps) * consumoMultiplicador;
+        double oxigenoPorPaso = (oxigeno / totalSteps) * consumoMultiplicador;
     
         String nave = "[>"; // Representación gráfica de la nave
     
@@ -295,6 +296,8 @@ public class App {
             // Reducir recursos por paso
             combustible -= combustiblePorPaso;
             oxigeno -= oxigenoPorPaso;
+
+            
             
             // Generar evento aleatorio y actualizar recursos si ocurre
             if (random.nextInt(100) < 5) { // 5% de probabilidad por paso
@@ -341,12 +344,20 @@ public class App {
         }
     
         // Final del viaje
-        System.out.println("\nViaje completado con éxito.");
-        System.out.printf("Recursos finales - Combustible: %.2f%% | Oxígeno: %.2f%%.%n", combustible, oxigeno);
-        pressEnter(reqCalculate);
-    }
+        System.out.println("\n");
+        if (combustible >= 50.0 && oxigeno >= 50.0) {
+            System.out.println("Viaje completado con éxito. Tienes los recursos necesarios para un viaje de regreso.");
+        } else {
+            System.out.println("Viaje completado con éxito, pero los recursos son insuficientes para regresar.GameOver.");
+            if (combustible < 50.0) {
+                System.err.printf("Combustible bajo solo queda: %.2f%% restante.%n", combustible);
+            }
+            if (oxigeno < 50.0) {
+                System.err.printf("Oxígeno bajo solo queda: %.2f%% restante.%n", oxigeno);
+            } 
+        }    
     
-
+    } 
     private static double[] triggerRandomEvent(Scanner reqCalculate, Random random) {
         System.out.println("\n¡Un evento ha ocurrido durante el viaje!");
     
@@ -391,31 +402,43 @@ public class App {
         }
     
         // Mostrar el evento al usuario
-        System.out.println(eventDescription);
-        System.out.printf("Impacto del evento: Combustible = %.2f, Oxígeno = %.2f%n", combustibleImpact, oxigenoImpact);
-    
+        
+         System.out.println(eventDescription);
+         System.out.printf("Impacto del evento: Combustible = %.2f, Oxígeno = %.2f%n", combustibleImpact, oxigenoImpact);
+
         // Preguntar al usuario si desea actuar
-        System.out.print("¿interactuas con el evento? (Si/No): ");
+        System.out.print("¿Interactuas con el evento? (Si/No): ");
         String respuesta = reqCalculate.nextLine().toLowerCase();
-    
+
         if (respuesta.equals("si")) {
-            // Usuario decide actuar
-            if (isNegative) {
-                System.out.println("Has reparado el problema con éxito. Los recursos han mejorado.");
-                combustibleImpact += 10.0; // Recuperación de combustible
-                oxigenoImpact += 10.0; // Recuperación de oxígeno
-            } else {
-                System.out.println("Has aprovechado el evento y maximizado los recursos.");
-                combustibleImpact += 5.0; // Mejora extra de combustible
-                oxigenoImpact += 5.0; // Mejora extra de oxígeno
-            }
-        } else {
-            // Usuario decide no actuar
-            System.out.println("Has decidido no tomar acción. Los recursos permanecen igual.");
-        }
+        // Usuario decide actuar
+        if (isNegative) {
+        System.out.println("Has reparado el problema con éxito. Los recursos han mejorado.");
+        combustibleImpact += 10.0; // Recuperación de combustible
+        oxigenoImpact += 10.0;    // Recuperación de oxígeno
+         } else {
+        System.out.println("Has aprovechado el evento y maximizado los recursos.");
+        combustibleImpact += 5.0;  // Mejora extra de combustible
+        oxigenoImpact += 5.0;     // Mejora extra de oxígeno
+    }
+}        else {
+    // Usuario decide no tomar acción
+    System.out.println("Has decidido no tomar acción.");
     
-        // Retornar los cambios en los recursos
-        return new double[] { combustibleImpact, oxigenoImpact };
+    if (isNegative) {
+        // Si es un evento negativo y no actúa, no se cambia nada (por ahora)
+        System.out.println("Los recursos permanecen igual.");
+    } else {
+        // Si es un evento positivo y no actúa, se restan recursos
+        System.out.println("Los recursos han disminuido por no aprovechar el evento.");
+        combustibleImpact -= 5.0;  // Disminuye combustible
+        oxigenoImpact -= 5.0;     // Disminuye oxígeno
+    }
+}
+
+     // Retornar los cambios en los recursos
+    return new double[] { combustibleImpact, oxigenoImpact };
+
     }
 
     
