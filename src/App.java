@@ -1,7 +1,9 @@
 import java.util.Random;
 import java.util.Scanner;
+
 public class App {
 
+    // Método con los planetas, distancias y descripci+on.
     static Object[] listPlanets() {
         String[] planets = { "Venus", "Marte", "Mercurio", "Júpiter", "Saturno", "Urano", "Neptuno" };
         double[] distance = { 42.4, 78.3, 91.7, 628.9, 1284.4, 2721.4, 4345.4 };
@@ -17,6 +19,7 @@ public class App {
         return new Object[] { planets, distance, description };
     }
 
+    // Método con las naves espaciales, sus velocidades y capacidad de pasajeros.
     static Object[] listSpaceships() {
         String[] spaceShips = { "Transbordador espacial", "Sonda espacial", "Nave de propulsión nuclear",
                 "Sonda solar de velocidad ultra alta", "Nave de propulsión de antimateria",
@@ -27,16 +30,17 @@ public class App {
         return new Object[] { spaceShips, speed, passengers };
     }
 
-    public static void main(String[] args) {
+    // Método principal
+    public static void main(String[] args) throws Exception {
         var request = new Scanner(System.in);
 
-        double[] resources = { 0, 0 }; // Combustible y oxígeno iniciales
-        showMenu(request, resources);
+        showMenu(request);
 
         request.close();
     }
 
-    private static void showMenu(Scanner reqShow, double[] resources) {
+    // Menú de opciones.
+    private static void showMenu(Scanner reqShow) {
         System.out.println("""
                 ----------------------------------------------------
                   BIENVENIDO AL SIMULADOR DE VIAJE INTERPLANETARIO
@@ -44,19 +48,18 @@ public class App {
         pressEnter(reqShow);
 
         byte optionM;
+        // Variables para almacenar los datos seleccionados
         double selectedPlanetDistance = -1;
         double selectedShipSpeed = -1;
-
         do {
             System.out.println("""
                     ----------------------------------
                              MENÚ DE OPCIONES
                     ----------------------------------""");
-            System.out.println("Elija las opciones en orden numérico.");
-            System.out.println("1. Configurar recursos de combustible y oxígeno.");
-            System.out.println("2. Seleccionar un planeta de destino.");
-            System.out.println("3. Seleccionar una nave espacial.");
-            System.out.println("4. Iniciar la simulación del viaje.");
+            System.out.println("Elija las opciones en orden númerico.");
+            System.out.println("1. Seleccionar un planeta de destino.");
+            System.out.println("2. Seleccionar una nave espacial.");
+            System.out.println("3. Iniciar la simulación del viaje.");
             System.out.println("0. Salir del programa.");
             System.out.print("-> ");
             optionM = reqShow.nextByte();
@@ -64,12 +67,9 @@ public class App {
 
             switch (optionM) {
                 case 1:
-                    configureResources(reqShow, resources);
-                    break;
-                case 2:
                     selectedPlanetDistance = choosePlanets(reqShow);
                     break;
-                case 3:
+                case 2:
                     if (selectedPlanetDistance <= 0) {
                         System.err.println("Debe seleccionar un planeta antes de elegir una nave espacial.");
                         pressEnter(reqShow);
@@ -77,14 +77,14 @@ public class App {
                         selectedShipSpeed = spaceShip(reqShow, selectedPlanetDistance);
                     }
                     break;
-                case 4:
-                    if (selectedPlanetDistance <= 0 || selectedShipSpeed <= 0 ) {
+                case 3:
+                    if (selectedPlanetDistance <= 0 || selectedShipSpeed <= 0) {
                         System.err.println(
                                 "Debe seleccionar un planeta y una nave espacial antes de iniciar la simulación.");
                         pressEnter(reqShow);
                     } else {
                         double timeHours = calculateSpeed(reqShow, selectedPlanetDistance, selectedShipSpeed);
-                        travelSimulation(reqShow, selectedPlanetDistance, selectedShipSpeed, timeHours, resources);
+                        travelSimulation(reqShow, selectedPlanetDistance, selectedShipSpeed, timeHours);
                     }
                     break;
                 case 0:
@@ -93,7 +93,6 @@ public class App {
                     System.err.println("Ingrese una opción válida");
                     pressEnter(reqShow);
                     break;
-
             }
 
         } while (optionM != 0);
@@ -101,53 +100,18 @@ public class App {
         System.out.println("Gracias por usar el simulador de viaje interplanetario, see you later.");
     }
 
-    private static void configureResources(Scanner scanner, double[] resources) {
-        System.out.println("""
-                --------------------------------------------------------
-                              CONFIGURAR RECURSOS
-                --------------------------------------------------------
-                """);
-
-        double fuel = -1, oxygen = -1;
-
-        do {
-            try {
-                System.out.print("Ingrese la cantidad de combustible (0-100): ");
-                fuel = scanner.nextDouble();
-                scanner.nextLine();
-
-                System.out.print("Ingrese la cantidad de oxígeno (0-100): ");
-                oxygen = scanner.nextDouble();
-                scanner.nextLine();
-
-                if (fuel < 0 || fuel > 100 || oxygen < 0 || oxygen > 100) {
-                    System.err.println("Los valores deben estar entre 0 y 100. Intente nuevamente.");
-                }
-            } catch (Exception e) {
-                System.err.println("Entrada inválida. Por favor, ingrese un número.");
-                scanner.nextLine();
-            }
-        } while (fuel < 0 || fuel > 100 || oxygen < 0 || oxygen > 100);
-
-        resources[0] = fuel;
-        resources[1] = oxygen;
-
-        System.out.printf("Recursos actualizados: Combustible = %.2f, Oxígeno = %.2f.%n", resources[0], resources[1]);
-        pressEnter(scanner);
-    }
-
+    // Método para elegir planeta.
     private static double choosePlanets(Scanner reqChoose) {
         byte optionP;
         double selectedDistance = -1;
 
+        // Obtiene los planetas, sus distancias y descripciones.
         Object[] planetCore = listPlanets();
         String[] planets = (String[]) planetCore[0];
         double[] distance = (double[]) planetCore[1];
         String[] description = (String[]) planetCore[2];
 
-        do 
-        {
-            
+        do {
             System.out.println("""
                     --------------------------------------------------------
                                   MENÚ DE ELECCIÓN DE PLANETAS
@@ -270,21 +234,23 @@ public class App {
     }
 
     // Método para ver el progreso, la cantidad de combustible, oxígeno y tiempo estimado.
-    private static void travelSimulation(Scanner reqCalculate, double planetDistance, double shipSpeed, double timeHours, double[] resources) {
-        double combustible = resources[0]; // Combustible configurado por el usuario
-        double oxigeno = resources[1]; // Oxígeno configurado por el usuario
+    private static void travelSimulation(Scanner reqCalculate, double planetDistance, double shipSpeed, double timeHours) {
+        double combustible = 100.0; // 100% de combustible al inicio.
+        double oxigeno = 100.0; // 100% de oxígeno al inicio.
         
-        int totalSteps = 100; // Progreso de 1 a 100 en incrementos de 2
-        long sleepTimePerStep = 300; // Tiempo de espera en milisegundos
-        
-        double consumoMultiplicador = 0.5;
-        double combustiblePorPaso = (combustible / totalSteps) * consumoMultiplicador;
-        double oxigenoPorPaso = (oxigeno / totalSteps) * consumoMultiplicador;
+        //Avance del progreso
+        int totalSteps = 50; // Progreso 1 a 100 de 2 en dos.
+        long sleepTimePerStep = 300; // Tiempo milisegundos si quieres lo puedes agrandar o minimizar.
+
+        // Puede cambiarlos para validar cuando faltan recursos
+        double combustiblePorPaso = 50.0 / totalSteps; // Disminuye 0,5% por cada 1 de avance de la nave.
+        double oxigenoPorPaso = 50.0 / totalSteps; // Disminuye 0,5% por cada 1% de avance de la nave.
+
+        String nave = "[>"; // La nave xd.
     
-        String nave = "[>"; // Representación gráfica de la nave
-    
-        Random random = new Random(); // Generador de eventos aleatorios
-    
+        // Generar un objeto Random para los eventos aleatorios.
+        Random random = new Random();
+
         for (int i = 1; i <= totalSteps; i++) {
             try {
                 Thread.sleep(sleepTimePerStep);
@@ -292,159 +258,128 @@ public class App {
                 System.err.println("Error en el hilo de ejecución: " + e.getMessage());
                 return;
             }
-    
-            // Reducir recursos por paso
+
+            // Quitar recursos.
             combustible -= combustiblePorPaso;
             oxigeno -= oxigenoPorPaso;
 
-            
-            
-            // Generar evento aleatorio y actualizar recursos si ocurre
-            if (random.nextInt(100) < 5) { // 5% de probabilidad por paso
-             double[] eventImpact = triggerRandomEvent(reqCalculate, random);
-              combustible += eventImpact[0]; // Ajustar combustible según el evento
-               oxigeno += eventImpact[1];     // Ajustar oxígeno según el evento
+            // Calcular distancia recorrida y restante.
+            double distancetraveled = (planetDistance * 1_000_000) * (i * 1.0 / totalSteps); // Convertir a km.
+            double remainingdistance = (planetDistance * 1_000_000) - distancetraveled; // Convertir a km.
 
-            // Asegurarse de que los recursos no excedan límites
-            combustible = Math.min(100.0, Math.max(0.0, combustible));
-            oxigeno = Math.min(100.0, Math.max(0.0, oxigeno));
+            // Calcular el tiempo restante en horas.
+            double remainingtime = remainingdistance / shipSpeed;
 
-            pressEnter(reqCalculate);
-
-            // Mostrar los recursos después del evento
-           System.out.printf("Recursos actuales: Combustible = %.2f%%, Oxígeno = %.2f%%%n", combustible, oxigeno);
-}
-
-
+            // Convertir el tiempo restante a horas y minutos.
+            int remainingHours = (int) remainingtime;
+            int remainingMinutes = (int) ((remainingtime - remainingHours) * 60);
 
             // Barra de progreso
-            double porcentaje = (i * 100.0) / totalSteps;
+            double percentage = (i * 100.0) / totalSteps;
             String barra = "=".repeat(i) + nave + " ".repeat(totalSteps - i);
-    
-            // Calcular tiempo restante
-            double distanciaRecorrida = (planetDistance * 1_000_000) * (i * 1.0 / totalSteps);
-            double distanciaRestante = (planetDistance * 1_000_000) - distanciaRecorrida;
-            double tiempoRestanteHoras = distanciaRestante / shipSpeed;
-    
-            int horasRestantes = (int) tiempoRestanteHoras;
-            int minutosRestantes = (int) ((tiempoRestanteHoras - horasRestantes) * 60);
-    
-            // Limpiar pantalla y mostrar barra actualizada
+
+            // Limpiar la pantalla
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            System.out.printf("\r[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%% | Tiempo Restante: %02d:%02d horas%n",
-                    barra, porcentaje, combustible, oxigeno, horasRestantes, minutosRestantes);
-    
-            // Terminar la simulación si los recursos se agotan
+
+            System.out.print("\r"); // Volver al inicio de la línea
+            System.out.printf("[%s] %.2f%% | Combustible: %.2f%% | Oxígeno: %.2f%% | Tiempo Restante: %02d:%02d horas%-20s",
+        barra, percentage, combustible, oxigeno, remainingHours, remainingMinutes, "");
+
+            // Generar eventos aleatorios
+            if (random.nextInt(100) < 10) { // 10% de probabilidad de que ocurra un evento en cada paso.
+                triggerRandomEvent(reqCalculate, random, combustible, oxigeno, combustiblePorPaso, oxigenoPorPaso);
+            }
+
+            // Fin de la simulación
             if (combustible <= 0 || oxigeno <= 0) {
-                System.err.println("\nLos recursos se han agotado. El viaje no puede continuar.");
+                System.err.println("\nLos recursos se han agotado.");
                 pressEnter(reqCalculate);
-                return;
+                return; // Fin de la simulación si los recursos se acaban.
             }
         }
-    
-        // Final del viaje
+
+        // Recursos al final del viaje.
         System.out.println("\n");
         if (combustible >= 50.0 && oxigeno >= 50.0) {
             System.out.println("Viaje completado con éxito. Tienes los recursos necesarios para un viaje de regreso.");
         } else {
-            System.out.println("Viaje completado con éxito, pero los recursos son insuficientes para regresar.GameOver.");
+            System.out.println("Viaje completado con éxito, pero los recursos son insuficientes para regresar.");
             if (combustible < 50.0) {
                 System.err.printf("Combustible bajo solo queda: %.2f%% restante.%n", combustible);
             }
             if (oxigeno < 50.0) {
                 System.err.printf("Oxígeno bajo solo queda: %.2f%% restante.%n", oxigeno);
-            } 
-        }    
-    
-    } 
-    private static double[] triggerRandomEvent(Scanner reqCalculate, Random random) {
+            }
+        }
+
+        pressEnter(reqCalculate);
+    }
+
+    private static void triggerRandomEvent(Scanner reqCalculate, Random random, double combustible, double oxigeno,
+            double combustibleporpaso, double oxigenoporpaso) {
         System.out.println("\n¡Un evento ha ocurrido durante el viaje!");
-    
-        boolean isNegative = random.nextBoolean(); // Determina si es un evento negativo o positivo
-        int eventType = random.nextInt(3); // Hay 3 tipos de eventos posibles
-        String eventDescription = "";
-    
-        double combustibleImpact = 0.0; // Cambios en combustible
-        double oxigenoImpact = 0.0;     // Cambios en oxígeno
-    
-        // Ajustar descripción y efecto según el tipo de evento
-        if (isNegative) {
-            switch (eventType) {
+
+        // evento negativo
+        if (random.nextBoolean()) {
+            int eventLoss = random.nextInt(3); // 3 posibles eventos de pérdida pueden cambiarse las frases
+            switch (eventLoss) {
                 case 0:
-                    eventDescription = "¡Oh no! Una fuga de oxígeno ha ocurrido.";
-                    oxigenoImpact = -10.0; // Oxígeno disminuye
+                    System.out.println("¡Oh no! Una fuga de oxígeno ha ocurrido.");
+                    oxigenoporpaso += 3.0;
                     break;
                 case 1:
-                    eventDescription = "¡Cuidado! El combustible está siendo consumido más rápido.";
-                    combustibleImpact = -10.0; // Combustible disminuye
+                    System.out.println("¡Cuidado! El combustible está siendo consumido más rápido.");
+                    combustibleporpaso += 2.0;
                     break;
                 case 2:
-                    eventDescription = "¡Problema en el sistema! Se ha perdido algo de oxígeno.";
-                    oxigenoImpact = -15.0; // Oxígeno disminuye
+                    System.out.println("¡Problema en el sistema! Se ha perdido algo de oxígeno.");
+                    oxigenoporpaso += 5.0;
                     break;
             }
         } else {
-            switch (eventType) {
+            // Evento positivo
+            int eventGain = random.nextInt(3); // 3 posibles eventos de ganancia pueden cambairse las frases
+            switch (eventGain) {
                 case 0:
-                    eventDescription = "Has encontrado una fuente de oxígeno adicional.";
-                    oxigenoImpact = +10.0; // Oxígeno aumenta
+                    System.out.println("Has encontrado una fuente de oxígeno adicional.");
+                    oxigenoporpaso -= 0.1;
                     break;
                 case 1:
-                    eventDescription = "¡Excelente! El sistema ha optimizado el consumo de combustible.";
-                    combustibleImpact = +10.0; // Combustible aumenta
+                    System.out.println("¡Excelente! El sistema ha optimizado el consumo de combustible.");
+                    combustibleporpaso -= 0.25;
                     break;
                 case 2:
-                    eventDescription = "¡Suerte! Has encontrado un suministro de oxígeno adicional.";
-                    oxigenoImpact = +15.0; // Oxígeno aumenta
+                    System.out.println("¡Suerte! Has encontrado un suministro de oxígeno adicional.");
+                    oxigenoporpaso -= 0.2;
                     break;
             }
         }
-    
-        // Mostrar el evento al usuario
-        
-         System.out.println(eventDescription);
-         System.out.printf("Impacto del evento: Combustible = %.2f, Oxígeno = %.2f%n", combustibleImpact, oxigenoImpact);
+
+        // Asegurarse de que los recursos no superen el 100% ni bajen del 0%
+        oxigeno = Math.min(100, Math.max(0, oxigeno));
+        combustible = Math.min(100, Math.max(0, combustible));
 
         // Preguntar al usuario si desea actuar
-        System.out.print("¿Interactuas con el evento? (Si/No): ");
+        System.out.print("¿Deseas repararlo? (Si/No): ");
         String respuesta = reqCalculate.nextLine().toLowerCase();
 
         if (respuesta.equals("si")) {
-        // Usuario decide actuar
-        if (isNegative) {
-        System.out.println("Has reparado el problema con éxito. Los recursos han mejorado.");
-        combustibleImpact += 10.0; // Recuperación de combustible
-        oxigenoImpact += 10.0;    // Recuperación de oxígeno
-         } else {
-        System.out.println("Has aprovechado el evento y maximizado los recursos.");
-        combustibleImpact += 5.0;  // Mejora extra de combustible
-        oxigenoImpact += 5.0;     // Mejora extra de oxígeno
+            // Acción positiva restaura recursos
+            oxigeno = Math.min(100, oxigeno + 10.0);
+            combustible = Math.min(100, combustible + 10.0);
+            System.out.println("Has decidido reparar el problema, los recursos han aumentado.");
+        } else {
+            // Respuesta incorrecta
+            System.out.println("Has decidido no tomar acción. Los recursos disminuyen debido al daño no reparado.");
+            oxigeno -= 5.0;
+            combustible -= 5.0;
+        }
+
+        // Imprimir los recursos actuales
+        System.out.printf("Recursos actuales - Combustible: %.2f%% | Oxígeno: %.2f%%\n", combustible, oxigeno);
+        pressEnter(reqCalculate);
     }
-}        else {
-    // Usuario decide no tomar acción
-    System.out.println("Has decidido no tomar acción.");
-    
-    if (isNegative) {
-        // Si es un evento negativo y no actúa, no se cambia nada (por ahora)
-        System.out.println("Los recursos permanecen igual.");
-    } else {
-        // Si es un evento positivo y no actúa, se restan recursos
-        System.out.println("Los recursos han disminuido por no aprovechar el evento.");
-        combustibleImpact -= 5.0;  // Disminuye combustible
-        oxigenoImpact -= 5.0;     // Disminuye oxígeno
-    }
-}
-
-     // Retornar los cambios en los recursos
-    return new double[] { combustibleImpact, oxigenoImpact };
-
-    }
-
-    
-
-
-    
 
     // Método para esperar a que el usuario presione ENTER para continuar.
     private static void pressEnter(Scanner pressRequest) {
