@@ -49,6 +49,7 @@ public class App {
 
     private static void showMenu(Scanner reqShow, double[] resources) {
         System.out.println(ANSI_PURPLE + """
+                
                 ----------------------------------------------------
                   BIENVENIDO AL SIMULADOR DE VIAJE INTERPLANETARIO
                 ----------------------------------------------------""" + ANSI_RESET);
