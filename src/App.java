@@ -353,7 +353,7 @@ public class App {
             // Generar dos eventos aleatorios
             if (counter == random.nextInt(100) || counter == random.nextInt(100)) {
                 // Generar evento aleatorio y actualizar recursos si ocurre
-                if (random.nextInt(100) < 50) { // 50% de probabilidad por paso
+                if (random.nextInt(100) < 70) { // 70% de probabilidad por paso
                     double[] eventImpact = triggerRandomEvent(reqCalculate, random);
                     combustible += eventImpact[0]; // Ajustar combustible según el evento
                     oxigeno += eventImpact[1]; // Ajustar oxígeno según el evento
