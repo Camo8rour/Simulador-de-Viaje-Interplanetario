@@ -1,3 +1,7 @@
+//juan sebastian barragan garcia
+//duvan camilo rodriguez urrego
+//reto #1 java
+
 import java.util.Random;
 import java.util.Scanner;
 
